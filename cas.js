@@ -175,6 +175,64 @@ class CAS {
 
         return expr;
     }
+
+    /*
+        cas.p(cas.l('f(2x^2) * sqrt((f(a) + 2) / 4 ) + 3'))
+    */
+
+    // Parser
+    p(lexed) {
+        // Handle groups
+        let groupHandler = (group) => {
+            let nodePos = 0;
+            while (nodePos < group.length) {
+                let node = group[nodePos];
+
+                if (node.type === 'EndParenthesisGroup') {
+                    let beginIndex = nodePos;
+
+                    while (true) {
+                        beginIndex--;
+
+                        if (group[beginIndex].type === 'BeginParenthesisGroup')
+                            break;
+                    }
+
+                    nodePos -= group.splice(beginIndex, nodePos - beginIndex + 1, groupHandler(group.slice(beginIndex + 1, nodePos))).length;
+                }
+
+                nodePos++;
+            }
+
+            return group;
+        }
+
+        let groups = groupHandler(lexed);
+        return groups;
+        let expr = null;
+        let hierarchy = [
+            'ComparisonOperator',
+
+            'PowerOperator',
+            'DivisionOperator',
+            'MultiplicationOperator',
+            'SubtractionOperator',
+            'AdditionOperator',
+
+            'NumberNode',
+            'TextNode'
+        ];
+        let scores = [];
+
+        for (let node of groups) {
+            if (node instanceof MathNode)
+                scores.push(hierarchy.indexOf(node.type));
+            else
+                scores.push(null);
+        }
+
+
+    }
 }
 
 class MathNode {
