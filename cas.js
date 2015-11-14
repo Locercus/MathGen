@@ -56,6 +56,10 @@ let unicode = {
     numbers: [0x0030, 0x0039] // Basic Latin
 };
 
+let constants = {
+    sqrt: undefined
+};
+
 class CAS {
     constructor(variables) {
         if (typeof variables !== 'object')
@@ -207,8 +211,37 @@ class CAS {
             return group;
         }
 
+        // Handle invisible multiplication
         let groups = groupHandler(lexed);
-        return groups;
+        for (let i = 0; i < groups.length - 1; i++) {
+            let nodes = [
+                groups[i],
+                groups[i + 1]
+            ];
+
+            let multiplication = false;
+
+            if (nodes[0] instanceof MathNode) {
+                if (['TextNode', 'NumberNode'].indexOf(nodes[0].type) > -1) {
+                    if (nodes[1] instanceof Array) {
+                        if (!(nodes[0].data in this.variables || nodes[0].data in constants))
+                            multiplication = true;
+                    }
+                    else if (nodes[1] instanceof MathNode && ['TextNode', 'NumberNode'].indexOf(nodes[1].type) > -1)
+                        multiplication = true;
+                }
+            }
+            else if (nodes[0] instanceof Array) {
+                if ((nodes[1] instanceof MathNode && nodes[1].type in ['TextNode', 'NumberNode']) || nodes[1] instanceof Array)
+                    multiplication = true;
+            }
+
+            if (multiplication) {
+                groups.splice(i + 1, 0, new MathNode('MultiplicationOperator', null));
+                i++;
+            }
+        }
+        
         let expr = null;
         let hierarchy = [
             'ComparisonOperator',
@@ -231,7 +264,7 @@ class CAS {
                 scores.push(null);
         }
 
-
+        console.log(groups, scores);
     }
 }
 
