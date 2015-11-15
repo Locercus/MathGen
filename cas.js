@@ -94,11 +94,11 @@ class CAS {
             // Letters
             if (eo(co, unicode.letters)) {
                 if (current == null)
-                    current = new MathNode('TextNode', '');
+                    current = new MathLexNode('TextNode', '');
 
                 if (current.type !== 'TextNode') {
                     newCurrent();
-                    current = new MathNode('TextNode', '');
+                    current = new MathLexNode('TextNode', '');
                 }
 
                 current.data += ch;
@@ -106,11 +106,11 @@ class CAS {
             // Numbers
             else if (eo(co, unicode.numbers)) {
                 if (current == null)
-                    current = new MathNode('NumberNode', '');
+                    current = new MathLexNode('NumberNode', '');
 
                 if (current.type !== 'NumberNode') {
                     newCurrent();
-                    current = new MathNode('NumberNode', '');
+                    current = new MathLexNode('NumberNode', '');
                 }
 
                 current.data += ch;
@@ -123,49 +123,49 @@ class CAS {
             else if (ch === '+') {
                 newCurrent();
 
-                expr.push(new MathNode('AdditionOperator', null));
+                expr.push(new MathLexNode('AdditionOperator', null));
             }
             // Subtraction
             else if (ch === '-') {
                 newCurrent();
 
-                expr.push(new MathNode('SubtractionOperator', null));
+                expr.push(new MathLexNode('SubtractionOperator', null));
             }
             // Multiplication
             else if (ch === '*') {
                 newCurrent();
 
-                expr.push(new MathNode('MultiplicationOperator', null));
+                expr.push(new MathLexNode('MultiplicationOperator', null));
             }
             // Division
             else if (ch === '/') {
                 newCurrent();
 
-                expr.push(new MathNode('DivisionOperator', null));
+                expr.push(new MathLexNode('DivisionOperator', null));
             }
             // Power
             else if (ch === '^') {
                 newCurrent();
 
-                expr.push(new MathNode('PowerOperator', null));
+                expr.push(new MathLexNode('PowerOperator', null));
             }
             // Equality
             else if (ch === '=') {
                 newCurrent();
 
-                expr.push(new MathNode('ComparisonOperator', 'equal'));
+                expr.push(new MathLexNode('ComparisonOperator', 'equal'));
             }
             // Begin Parenthesis
             else if (ch === '(') {
                 newCurrent();
 
-                expr.push(new MathNode('BeginParenthesisGroup', null));
+                expr.push(new MathLexNode('BeginParenthesisGroup', null));
             }
             // End Parenthesis
             else if (ch === ')') {
                 newCurrent();
 
-                expr.push(new MathNode('EndParenthesisGroup', null));
+                expr.push(new MathLexNode('EndParenthesisGroup', null));
             }
             // Unknown character
             else
@@ -179,10 +179,6 @@ class CAS {
 
         return expr;
     }
-
-    /*
-        cas.p(cas.l('f(2x^2) * sqrt((f(a) + 2) / 4 ) + 3'))
-    */
 
     // Parser
     p(lexed) {
@@ -211,64 +207,216 @@ class CAS {
             return group;
         }
 
-        // Handle invisible multiplication
+        // Handle invisible multiplication/functions
         let groups = groupHandler(lexed);
-        for (let i = 0; i < groups.length - 1; i++) {
-            let nodes = [
-                groups[i],
-                groups[i + 1]
-            ];
+        let invisMultiplHandler = (groups) => {
+            for (let i = 0; i < groups.length - 1; i++) {
+                let nodes = [
+                    groups[i],
+                    groups[i + 1]
+                ];
 
-            let multiplication = false;
+                let multiplication = false;
+                let func = false;
 
-            if (nodes[0] instanceof MathNode) {
-                if (['TextNode', 'NumberNode'].indexOf(nodes[0].type) > -1) {
-                    if (nodes[1] instanceof Array) {
-                        if (!(nodes[0].data in this.variables || nodes[0].data in constants))
+                if (nodes[0] instanceof MathLexNode) {
+                    if (['TextNode', 'NumberNode'].indexOf(nodes[0].type) > -1) {
+                        if (nodes[1] instanceof Array) {
+                            invisMultiplHandler(nodes[1]);
+
+                            if (nodes[0].data in this.variables || nodes[0].data in constants)
+                                func = true;
+                            else
+                                multiplication = true;
+                        }
+                        else if (nodes[1] instanceof MathLexNode && ['TextNode', 'NumberNode'].indexOf(nodes[1].type) > -1)
                             multiplication = true;
                     }
-                    else if (nodes[1] instanceof MathNode && ['TextNode', 'NumberNode'].indexOf(nodes[1].type) > -1)
+                }
+                else if (nodes[0] instanceof Array) {
+                    invisMultiplHandler(nodes[0]);
+
+                    if ((nodes[1] instanceof MathLexNode && nodes[1].type in ['TextNode', 'NumberNode']) || nodes[1] instanceof Array)
                         multiplication = true;
                 }
-            }
-            else if (nodes[0] instanceof Array) {
-                if ((nodes[1] instanceof MathNode && nodes[1].type in ['TextNode', 'NumberNode']) || nodes[1] instanceof Array)
-                    multiplication = true;
-            }
 
-            if (multiplication) {
-                groups.splice(i + 1, 0, new MathNode('MultiplicationOperator', null));
-                i++;
+                if (multiplication) {
+                    groups.splice(i + 1, 0, new MathLexNode('MultiplicationOperator', null));
+                    i++;
+                }
+                else if (func) {
+                    groups.splice(i, 1, new MathLexNode('FunctionOperator', nodes[0].data));
+                    i++;
+                }
             }
         }
+
+        invisMultiplHandler(groups);
+
         
-        let expr = null;
         let hierarchy = [
             'ComparisonOperator',
 
+            'FunctionOperator',
+
             'PowerOperator',
-            'DivisionOperator',
             'MultiplicationOperator',
-            'SubtractionOperator',
+            'DivisionOperator',
             'AdditionOperator',
-
-            'NumberNode',
-            'TextNode'
+            'SubtractionOperator',
         ];
-        let scores = [];
 
-        for (let node of groups) {
-            if (node instanceof MathNode)
-                scores.push(hierarchy.indexOf(node.type));
+        let parser = groups => {
+            let scores = [];
+
+            if (!(groups instanceof Array))
+                groups = [groups];
+
+            for (let node of groups) {
+                let score = -1;
+
+                if (node instanceof MathLexNode)
+                    score = hierarchy.indexOf(node.type);
+
+                scores.push(score);
+            }
+
+            let operatorIndex = scores.indexOf(Math.max.apply(Math, scores));
+
+            let operator = groups[operatorIndex];
+            let a = groups.slice(0, operatorIndex);
+            let b = groups.slice(operatorIndex + 1, groups.length);
+
+            // Handle unnecessary parantheses
+            while (operator instanceof Array && operator.length === 1)
+                operator = operator[0];
+
+            while (a instanceof Array && a.length === 1)
+                a = a[0];
+
+            while (b instanceof Array && b.length === 1)
+                b = b[0];
+
+            console.log(a)
+            console.log(operator)
+            console.log(b)
+            console.log()
+
+            if (a == undefined || b == undefined)
+                return operator;
+
+            if (operator.type === 'FunctionOperator')
+                return new FunctionNode(operator.data, parser(b));
+
+            else if (operator.type === 'MultiplicationOperator')
+                return new MultiplicationOperator(parser(a), parser(b));
+
+            else if (operator.type === 'DivisionOperator')
+                return new DivisionOperator(parser(a), parser(b));
+
+            else if (operator.type === 'AdditionOperator')
+                return new AdditionOperator(parser(a), parser(b));
+
+            else if (operator.type === 'SubtractionOperator')
+                return new SubtractionOperator(parser(a), parser(b));
+
+            else if (operator.type === 'PowerOperator')
+                return new PowerOperator(parser(a), parser(b));
+
+            else if (operator.type === 'TextNode') {
+                let variable = new VariableNode(operator.data[0]);
+                if (operator.data.length === 1)
+                    return variable;
+                else
+                    return new MultiplicationOperator(variable, parser([new MathLexNode('TextNode', operator.data.substr(1))]));
+            }
+
+            else if (operator.type === 'NumberNode')
+                return new NumberNode(parseInt(operator.data, 10));
+
             else
-                scores.push(null);
+                throw new Error('Unimplemented token type "' + operator.type + '"');
         }
 
-        console.log(groups, scores);
+        let expr = parser(groups);
+
+        return expr;
     }
+
+    /*
+        cas.p(cas.l('f(2x^2) * sqrt((f(a) + 2) / 4 ) + 3'))
+    */
 }
 
 class MathNode {
+
+}
+
+class VariableNode extends MathNode {
+    constructor(name) {
+        super();
+
+        this.name = name;
+    }
+}
+
+class NumberNode extends MathNode {
+    constructor(value) {
+        super();
+
+        this.value = value;
+    }
+}
+
+class FunctionNode extends MathNode {
+    constructor(name, value) {
+        super();
+
+        this.name = name;
+        this.value = value;
+    }
+}
+
+class MathOperator extends MathNode {
+    constructor(a, b) {
+        super();
+
+        this.a = a;
+        this.b = b;
+    }
+}
+
+class MultiplicationOperator extends MathOperator {
+    constructor(a, b) {
+        super(a, b);
+    }
+}
+
+class DivisionOperator extends MathOperator {
+    constructor(a, b) {
+        super(a, b);
+    }
+}
+
+class AdditionOperator extends MathOperator {
+    constructor(a, b) {
+        super(a, b);
+    }
+}
+
+class SubtractionOperator extends MathOperator {
+    constructor(a, b) {
+        super(a, b);
+    }
+}
+
+class PowerOperator extends MathOperator {
+    constructor(a, b) {
+        super(a, b);
+    }
+}
+
+class MathLexNode {
     constructor(type, data) {
         this.type = type;
         this.data = data;
