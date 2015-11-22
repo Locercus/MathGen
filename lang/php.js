@@ -2,6 +2,10 @@
 
 'use strict';
 
+function run(i) {
+    return handler(i);
+}
+
 function handler(i) {
     if (i instanceof Array)
         return '';
@@ -196,4 +200,4 @@ function handler(i) {
     }
 };
 
-module.exports.handler = handler;
+module.exports.handler = run;
