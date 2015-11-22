@@ -345,6 +345,9 @@ class Parser {
             if (a == undefined || b == undefined)
                 return operator;
 
+            if (operator == undefined)
+                return [];
+
             if (operator.type === 'FunctionOperator') {
                 let parameters = [[]];
 

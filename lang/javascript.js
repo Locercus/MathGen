@@ -3,6 +3,9 @@
 'use strict';
 
 function handler(i) {
+    if (i instanceof Array)
+        return '';
+
     switch (i.constructor) {
         case VariableNode:
             return i.name;
