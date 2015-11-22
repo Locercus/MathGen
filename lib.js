@@ -57,6 +57,11 @@ let unicode = {
 };
 
 let constants = [
+    // Constants
+    'e',        // e ≈ 2.718          euler's constant
+    'pi',       // pi ≈ 3.141         Pi
+
+    // Functions
     'abs',      // abs(-1) = 1        Absolute value
     'acos',
     'acosh',
@@ -68,7 +73,6 @@ let constants = [
     'ceil',     // ceil(5.3) = 6      Rounds up to next integer
     'cos',
     'cosh',
-    'e',        // e ≈ 2.718          euler's constant
     'exp',      // exp(1) = e         Returns e^x
     'floor',    // floor(5.5) = 5     Rounds down to previous integer
     'ln',       // ln(e) = 1          Natural logarithm
@@ -76,9 +80,8 @@ let constants = [
     'max',      // max(1, 2, 3) = 3   Returns the largest value
     'min',      // min(1, 2, 3) = 1   Returns the smallest value
     'nthRoot',  // nthRoot(4, 2) = 2  nth root
-    'pi',       // pi ≈ 3.141         Pi
     'rand',     //                    Alias of random
-    'random',   //                    If no arguments are supplied, returns a random float in the interval [0; 1[. Otherwise expects two parameters of inclusive range.
+    'random',   //                    If no arguments are supplied, returns a random float in the interval [0; 1[. Otherwise expects two parameters as range: [a; b[.
     'round',    // round(5.5) = 6     Rounds to nearest integer
     'sgn',      //                    Alias of signum
     'sign',     //                    Alias of signum
