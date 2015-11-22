@@ -204,6 +204,22 @@ function handler(i) {
                         handler(i.value[0]) +
                     ')';
 
+                case 'sin':
+                    if (imports.indexOf('import math') === -1)
+                        imports.push('import math');
+
+                    return 'math.sin(' +
+                        handler(i.value[0]) +
+                    ')';
+
+                case 'sinh':
+                    if (imports.indexOf('import math') === -1)
+                        imports.push('import math');
+                    
+                    return 'math.sinh(' +
+                        handler(i.value[0]) +
+                    ')';
+
                 case 'sqrt':
                     if (imports.indexOf('import math') === -1)
                         imports.push('import math');

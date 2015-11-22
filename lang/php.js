@@ -143,6 +143,16 @@ function handler(i) {
                 case 'signum':
                     return '(((' + handler(i.value[0]) + ') > 0) ? 1 : (((' + handler(i.value[0]) + ') < 0) ? -1 : 0))';
 
+                case 'sin':
+                    return 'sin(' +
+                        handler(i.value[0]) +
+                    ')';
+
+                case 'sinh':
+                    return 'sinh(' +
+                        handler(i.value[0]) +
+                    ')';
+
                 case 'sqrt':
                     return 'sqrt(' +
                         handler(i.value[0]) +

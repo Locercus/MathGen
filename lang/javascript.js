@@ -144,6 +144,16 @@ function handler(i) {
                         handler(i.value[0]) +
                     ')';
 
+                case 'sin':
+                    return 'Math.sin(' +
+                        handler(i.value[0]) +
+                    ')';
+
+                case 'sinh':
+                    return 'Math.sinh(' +
+                        handler(i.value[0]) +
+                    ')';
+
                 case 'sqrt':
                     return 'Math.sqrt(' +
                         handler(i.value[0]) +

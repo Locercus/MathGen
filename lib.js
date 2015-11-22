@@ -86,6 +86,8 @@ let constants = [
     'sgn',      //                    Alias of signum
     'sign',     //                    Alias of signum
     'signum',   // signum(-4.5) = -1  Returns the sign value
+    'sin',
+    'sinh',
     'sqrt',     // sqrt(4) = 2        Square root
     'tan',
     'tanh',
