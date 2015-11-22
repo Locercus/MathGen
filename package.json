@@ -8,5 +8,8 @@
   },
   "author": "Jonatan Nordentoft (Locercus)",
   "license": "GPLv3",
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "commander": "^2.9.0"
+  }
 }
