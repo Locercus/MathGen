@@ -370,10 +370,18 @@ class Parser {
 
             else if (operator.type === 'TextNode') {
                 let variable = new VariableNode(operator.data[0]);
-                if (operator.data.length === 1)
-                    return variable;
-                else
-                    return new MultiplicationOperator(variable, parser([new MathLexNode('TextNode', operator.data.substr(1))]));
+                if (operator.data.length === 1) {
+                    if (constants.indexOf(operator.data) > -1)
+                        return new ConstantNode(operator.data);
+                    else
+                        return variable;
+                }
+                else {
+                    if (constants.indexOf(operator.data) > -1)
+                        return new ConstantNode(operator.data);
+                    else
+                        return new MultiplicationOperator(variable, parser([new MathLexNode('TextNode', operator.data.substr(1))]));
+                }
             }
 
             else if (operator.type === 'NumberNode')
@@ -418,6 +426,14 @@ class FunctionNode extends MathNode {
 
         this.name = name;
         this.value = value;
+    }
+}
+
+class ConstantNode extends MathNode {
+    constructor(name) {
+        super();
+
+        this.name = name;
     }
 }
 
