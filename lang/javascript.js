@@ -3,8 +3,6 @@
 'use strict';
 
 function handler(i) {
-    console.log(i);
-
     switch (i.constructor) {
         case VariableNode:
             return i.name;
@@ -158,6 +156,41 @@ function handler(i) {
                 default:
                     throw new Error('Unknown function "' + i.name + '"');
             }
+
+        case ConstantNode:
+            switch (i.name) {
+                case 'e':
+                    return 'Math.E';
+
+                case 'pi':
+                    return 'Math.PI';
+
+
+                default:
+                    throw new Error('Unknown constant "' + i.name + '"')
+            }
+
+        case MultiplicationOperator:
+            return handler(i.a) + '*' + handler(i.b);
+
+        case DivisionOperator:
+            return handler(i.a) + '/' + handler(i.b);
+
+        case AdditionOperator:
+            return handler(i.a) + '+' + handler(i.b);
+
+        case SubtractionOperator:
+            return handler(i.a) + '-' + handler(i.b);
+
+        case PowerOperator:
+            return 'Math.pow(' + handler(i.a) + ',' + handler(i.b) + ')';
+
+        case ModuloOperator:
+            return handler(i.a) + '%' + handler(i.b);
+
+
+        default:
+            throw new Error('Unimplemented NodeType "' + i.constructor + '"');
     }
 };
 

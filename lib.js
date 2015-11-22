@@ -497,6 +497,7 @@ global.Parser = Parser;
 global.VariableNode           = VariableNode;
 global.NumberNode             = NumberNode;
 global.FunctionNode           = FunctionNode;
+global.ConstantNode           = ConstantNode;
 global.MultiplicationOperator = MultiplicationOperator;
 global.DivisionOperator       = DivisionOperator;
 global.AdditionOperator       = AdditionOperator;
