@@ -458,3 +458,12 @@ class MathLexNode {
 }
 
 global.Parser = Parser;
+
+global.VariableNode           = VariableNode;
+global.NumberNode             = NumberNode;
+global.FunctionNode           = FunctionNode;
+global.MultiplicationOperator = MultiplicationOperator;
+global.DivisionOperator       = DivisionOperator;
+global.AdditionOperator       = AdditionOperator;
+global.SubtractionOperator    = SubtractionOperator;
+global.PowerOperator          = PowerOperator;
