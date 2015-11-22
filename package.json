@@ -1,6 +1,6 @@
 {
   "name": "MathGen",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Math Code Generator",
   "main": "gen.js",
   "scripts": {
