@@ -57,8 +57,35 @@ let unicode = {
 };
 
 let constants = [
-    'sqrt',
-    'nthRoot'
+    'abs',      // abs(-1) = 1        Absolute value
+    'acos',
+    'acosh',
+    'asin',
+    'asinh',
+    'atan',
+    'atanh',
+    'cbrt',     // cbrt(9) = 3        Cube root
+    'ceil',     // ceil(5.3) = 6      Rounds up to next integer
+    'cos',
+    'cosh',
+    'e',        // e ≈ 2.718          euler's constant
+    'exp',      // exp(1) = e         Returns e^x
+    'floor',    // floor(5.5) = 5     Rounds down to previous integer
+    'ln',       // ln(e) = 1          Natural logarithm
+    'log',      // log(10, 10) = 1    Base n logarithm. Base defaults to 10
+    'max',      // max(1, 2, 3) = 3   Returns the largest value
+    'min',      // min(1, 2, 3) = 1   Returns the smallest value
+    'nthRoot',  // nthRoot(4, 2) = 2  nth root
+    'pi',       // pi ≈ 3.141         Pi
+    'rand',     //                    Alias of random
+    'random',   //                    If no arguments are supplied, returns a random float in the interval [0; 1[. Otherwise expects two parameters of inclusive range.
+    'round',    // round(5.5) = 6     Rounds to nearest integer
+    'sgn',      //                    Alias of signum
+    'sign',     //                    Alias of signum
+    'signum',   // signum(-4.5) = -1  Returns the sign value
+    'sqrt',     // sqrt(4) = 2        Square root
+    'tan',
+    'tanh',
 ];
 
 class Parser {
@@ -149,12 +176,6 @@ class Parser {
                 newCurrent();
 
                 expr.push(new MathLexNode('PowerOperator', null));
-            }
-            // Equality
-            else if (ch === '=') {
-                newCurrent();
-
-                expr.push(new MathLexNode('ComparisonOperator', 'equal'));
             }
             // Begin Parenthesis
             else if (ch === '(') {
@@ -262,8 +283,6 @@ class Parser {
 
         
         let hierarchy = [
-            'ComparisonOperator',
-
             'FunctionOperator',
 
             'ParameterSeparator',
