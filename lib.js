@@ -56,9 +56,10 @@ let unicode = {
     numbers: [0x0030, 0x0039] // Basic Latin
 };
 
-let constants = {
-    sqrt: undefined
-};
+let constants = [
+    'sqrt',
+    'nthRoot'
+];
 
 class Parser {
     constructor(variables) {
@@ -167,6 +168,12 @@ class Parser {
 
                 expr.push(new MathLexNode('EndParenthesisGroup', null));
             }
+            // Comma
+            else if (ch === ',') {
+                newCurrent();
+
+                expr.push(new MathLexNode('ParameterSeparator', null));
+            }
             // Unknown character
             else
                 throw new Error('Unknown character "' + ch + '" at pos ' + pos);
@@ -224,7 +231,7 @@ class Parser {
                         if (nodes[1] instanceof Array) {
                             invisMultiplHandler(nodes[1]);
 
-                            if (nodes[0].data in this.variables || nodes[0].data in constants)
+                            if (nodes[0].data in this.variables || constants.indexOf(nodes[0].data) > -1)
                                 func = true;
                             else
                                 multiplication = true;
@@ -258,6 +265,8 @@ class Parser {
             'ComparisonOperator',
 
             'FunctionOperator',
+
+            'ParameterSeparator',
 
             'PowerOperator',
             'MultiplicationOperator',
@@ -297,16 +306,26 @@ class Parser {
             while (b instanceof Array && b.length === 1)
                 b = b[0];
 
-            console.log(a)
-            console.log(operator)
-            console.log(b)
-            console.log()
-
             if (a == undefined || b == undefined)
                 return operator;
 
-            if (operator.type === 'FunctionOperator')
-                return new FunctionNode(operator.data, parser(b));
+            if (operator.type === 'FunctionOperator') {
+                let parameters = [[]];
+
+                for (let param of b) {
+                    if (param.type === 'ParameterSeparator') {
+                        parameters[parameters.length - 1] = parser(parameters[parameters.length - 1]);
+                        parameters.push([]);
+                    }
+                    else
+                        parameters[parameters.length - 1].push(param);
+
+                }
+
+                parameters[parameters.length - 1] = parser(parameters[parameters.length - 1]);
+
+                return new FunctionNode(operator.data, parameters);
+            }
 
             else if (operator.type === 'MultiplicationOperator')
                 return new MultiplicationOperator(parser(a), parser(b));
