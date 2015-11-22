@@ -177,6 +177,12 @@ class Parser {
 
                 expr.push(new MathLexNode('PowerOperator', null));
             }
+            // Modulo
+            else if (ch === '%') {
+                newCurrent();
+
+                expr.push(new MathLexNode('ModuloOperator', null));
+            }
             // Begin Parenthesis
             else if (ch === '(') {
                 newCurrent();
@@ -290,6 +296,7 @@ class Parser {
             'PowerOperator',
             'MultiplicationOperator',
             'DivisionOperator',
+            'ModuloOperator',
             'AdditionOperator',
             'SubtractionOperator',
         ];
@@ -372,6 +379,9 @@ class Parser {
             else if (operator.type === 'NumberNode')
                 return new NumberNode(parseInt(operator.data, 10));
 
+            else if (operator.type === 'ModuloOperator')
+                return new ModuloOperator(parser(a), parser(b));
+
             else
                 throw new Error('Unimplemented token type "' + operator.type + '"');
         }
@@ -450,6 +460,12 @@ class PowerOperator extends MathOperator {
     }
 }
 
+class ModuloOperator extends MathOperator {
+    constructor(a, b) {
+        super(a, b);
+    }
+}
+
 class MathLexNode {
     constructor(type, data) {
         this.type = type;
@@ -467,3 +483,4 @@ global.DivisionOperator       = DivisionOperator;
 global.AdditionOperator       = AdditionOperator;
 global.SubtractionOperator    = SubtractionOperator;
 global.PowerOperator          = PowerOperator;
+global.ModuloOperator         = ModuloOperator;
