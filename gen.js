@@ -28,6 +28,8 @@ if (!exists) {
     process.exit(2);
 }
 
+language = require('./' + language).handler;
+
 process.stdin.setEncoding('utf8');
 process.stdin.resume();
 let input = [];
@@ -39,5 +41,7 @@ process.stdin.on('end', function () {
 
     let parser = new Parser();
 
-    console.log(util.inspect(parser.p(parser.l(input)), { depth: null }));
+    let output = language(parser.p(parser.l(input)));
+
+    console.log(output);
 });
