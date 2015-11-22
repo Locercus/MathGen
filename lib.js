@@ -81,7 +81,7 @@ let constants = [
     'min',      // min(1, 2, 3) = 1   Returns the smallest value
     'nthRoot',  // nthRoot(4, 2) = 2  nth root
     'rand',     //                    Alias of random
-    'random',   //                    If no arguments are supplied, returns a random float in the interval [0; 1[. Otherwise expects two parameters as range: [a; b[.
+    'random',   //                    If no arguments are supplied, returns a random float in the interval [0; 1[. Otherwise expects two parameters as range: [a; b].
     'round',    // round(5.5) = 6     Rounds to nearest integer
     'sgn',      //                    Alias of signum
     'sign',     //                    Alias of signum
