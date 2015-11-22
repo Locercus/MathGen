@@ -146,6 +146,13 @@ class Parser {
 
                 current.data += ch;
             }
+            // Decimal separator (dot)
+            else if (ch === '.') {
+                if (current == null || current.type !== 'NumberNode' || current.data.indexOf('.') > -1)
+                    throw new Error('Unexpected decimal separator at pos ' + pos);
+
+                current.data += '.';
+            }
             // Spaces
             else if (eo(co, unicode.spaces)) {
                 newCurrent();
@@ -388,7 +395,7 @@ class Parser {
             }
 
             else if (operator.type === 'NumberNode')
-                return new NumberNode(parseInt(operator.data, 10));
+                return new NumberNode(operator.data);
 
             else if (operator.type === 'ModuloOperator')
                 return new ModuloOperator(parser(a), parser(b));
