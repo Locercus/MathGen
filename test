@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-cat <(printf "require('./cas.js');\nvar cas = new CAS();\n") - | node -i
