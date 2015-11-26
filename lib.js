@@ -59,7 +59,7 @@ let unicode = {
 let constants = [
     // Constants
     'e',        // e ≈ 2.718          euler's constant
-    'pi',       // pi ≈ 3.141         Pi
+    'pi',       // pi ≈ 3.142         Pi
 
     // Functions
     'abs',      // abs(-1) = 1        Absolute value
