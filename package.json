@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Mia Nordentoft (Locercus)",
+  "author": "Mia Nordentoft",
   "license": "GPLv3",
   "devDependencies": {},
   "dependencies": {
