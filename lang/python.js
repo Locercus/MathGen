@@ -173,10 +173,8 @@ function handler(i) {
                     if (imports.indexOf('import math') === -1)
                         imports.push('import math');
                     
-                    return 'math.pow(' +
-                        handler(i.value[0]) +
-                        '1 / (' + handler(i.value[1]) + ')' +
-                    ')';
+                    return handler(i.value[0]) + '**' +
+                        '(1 / (' + handler(i.value[1]) + '))';
 
                 case 'rand':
                 case 'random': {
@@ -284,7 +282,7 @@ function handler(i) {
             if (imports.indexOf('import math') === -1)
                 imports.push('import math');
                     
-            return 'math.pow(' + handler(i.a) + ',' + handler(i.b) + ')';
+            return handler(i.a) + '**' + handler(i.b);
 
         case ModuloOperator:
             return handler(i.a) + '%' + handler(i.b);
