@@ -24,7 +24,7 @@ sqrt(pow($a,2)+pow($b,2))
 $ echo "sqrt(a^2 + b^2)" | ./gen.js python
 import math
 
-math.sqrt(math.pow(a,2)+math.pow(b,2))
+math.sqrt(a**2+b**2)
 ```
 
 ## Features
